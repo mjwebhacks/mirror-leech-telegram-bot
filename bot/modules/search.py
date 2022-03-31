@@ -6,7 +6,7 @@ from urllib.parse import quote
 from telegram import InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackQueryHandler
 
-from bot import dispatcher, LOGGER, SEARCH_API_LINK, SEARCH_PLUGINS, get_client, SEARCH_LIMIT
+from bot import dispatcher, LOGGER, SEARCH_API_LINK, SEARCH_PLUGINS, get_client
 from bot.helper.ext_utils.telegraph_helper import telegraph
 from bot.helper.telegram_helper.message_utils import editMessage, sendMessage, sendMarkup
 from bot.helper.telegram_helper.filters import CustomFilters
