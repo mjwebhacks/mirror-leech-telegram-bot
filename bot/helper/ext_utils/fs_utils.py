@@ -30,9 +30,7 @@ def start_cleanup():
 
 def clean_all():
     aria2.remove_all(True)
-    qbc = get_client()
-    qbc.torrents_delete(torrent_hashes="all", delete_files=True)
-    qbc.app_shutdown()
+    get_client().torrents_delete(torrent_hashes="all")
     try:
         rmtree(DOWNLOAD_DIR)
     except FileNotFoundError:
@@ -75,16 +73,13 @@ def check_storage_threshold(size: int, arch=False, alloc=False):
         if not arch:
             if disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
                 return False
-        else:
-            if disk_usage(DOWNLOAD_DIR).free - (size * 2) < STORAGE_THRESHOLD * 1024**3:
-                return False
-    else:
-        if not arch:
-            if disk_usage(DOWNLOAD_DIR).free < STORAGE_THRESHOLD * 1024**3:
-                return False
-        else:
-            if disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
-                return False
+        elif disk_usage(DOWNLOAD_DIR).free - (size * 2) < STORAGE_THRESHOLD * 1024**3:
+            return False
+    elif not arch:
+        if disk_usage(DOWNLOAD_DIR).free < STORAGE_THRESHOLD * 1024**3:
+            return False
+    elif disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
+        return False
     return True
 
 def get_base_name(orig_path: str):
@@ -194,7 +189,7 @@ def take_ss(video_file):
 def split(path, size, file_, dirpath, split_size, start_time=0, i=1, inLoop=False):
     parts = ceil(size/TG_SPLIT_SIZE)
     if EQUAL_SPLITS and not inLoop:
-        split_size = ceil(size/parts)
+        split_size = ceil(size/parts) + 1000
     if file_.upper().endswith(VIDEO_SUFFIXES):
         base_name, extension = ospath.splitext(file_)
         split_size = split_size - 2500000
